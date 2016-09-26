@@ -34,7 +34,7 @@ class DecisionTree(Classifier):
     def __init__(self, database):
         self.database = database
         self.trained = False
-        self.model = DecisionTreeClassifier(max_depth = 10)
+        self.model = DecisionTreeClassifier()
         self.classes = None
         
     def train(self, features, labels):
