@@ -109,6 +109,7 @@ class Bagging(Classifier):
             classes corresponds to that in the attribute `classes`.
         """
         predictions = []
+        predictions_votes = numpy.empty(len(self.classes), dtype=object)
         predictions_probas = []
         final_proba = []
         max_class = None
@@ -116,9 +117,22 @@ class Bagging(Classifier):
             temp_prediction, temp_proba = self.model[i].predict(features)
             predictions.append(temp_prediction)
             predictions_probas.append(temp_proba)
-        final_proba = numpy.mean(predictions_probas, axis = 0)
-        max_class_index = numpy.argmax(final_proba)
-        max_class = [self.classes[max_class_index]]
+        predictions_votes[self.classes.tolist().index("Sane")] = predictions.count('Sane')
+        predictions_votes[self.classes.tolist().index("Mild")] = predictions.count('Mild')
+        predictions_votes[self.classes.tolist().index("Serious")] = predictions.count('Serious')
+        max_votes = max(predictions_votes)
+        voting = [i for i, j in enumerate(predictions_votes) if j == max_votes]
+        if(len(voting) > 1):
+            final_proba = numpy.mean(predictions_probas, axis = 0)
+            max_class_index = numpy.argmax(final_proba)
+            max_class = [self.classes[max_class_index]]
+        else: 
+            max_class = self.classes[voting]
+            temp_proba = []
+            for i in range(len(predictions_votes)):
+               temp_proba.append(predictions_votes[i]/self.number_classifiers)
+            final_proba.append(temp_proba)
+            final_proba = numpy.array(final_proba)
         return max_class, final_proba
         
     def save(self, path, index = 0):
