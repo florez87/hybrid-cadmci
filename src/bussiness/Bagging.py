@@ -92,7 +92,8 @@ class Bagging(Classifier):
     def predict(self, features):
         """
         Predict label and class probabilities of the input sample (features).
-        Predictions are obtained by voting or averaging each model estimate.
+        Predictions are obtained by voting or averaging --in case of voting tie-- 
+        each model's estimate.
         
         Parameters
         ----------
